@@ -1,25 +1,61 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:new_project/firebase/DBFirestore.dart';
 
-import '../../classes/contact.dart';
+import '../../classes/Contact.dart';
 import '../Chat.dart';
 
 class Contacts extends StatefulWidget {
+  String id = "";
+
+  Contacts(this.id);
 
   @override
-  _ContactsState createState() => _ContactsState();
+  _ContactsState createState() => _ContactsState(id);
+
 }
 
-class _ContactsState extends State<Contacts> {
+class _ContactsState extends State<Contacts> with WidgetsBindingObserver{
+  List<Contact> contacts = [];
+  String id = "";
+
+  _ContactsState(this.id);
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      DBFirestore.changeIsOnline(id, false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return listContacts();
+    DBFirestore.changeIsOnline(id, true);
+    return FutureBuilder(
+      future: DBFirestore.getContacts(id),
+      builder: (BuildContext context, snapshot) {
+        switch(snapshot.connectionState) {
+
+          case ConnectionState.none:
+            // TODO: Handle this case.
+          case ConnectionState.waiting:
+            return loadingBar();
+          case ConnectionState.active:
+            // TODO: Handle this case.
+          case ConnectionState.done:
+            if(snapshot.hasData) {
+              if(snapshot.data != null) {
+                contacts = snapshot.data!;
+              }
+            }
+            return listContacts(contacts);
+        }
+      },
+    );
   }
 }
 
-Widget listContacts() {
-  List<Contact> contacts = <Contact>[Contact("Виктор", "Власов"), Contact("Саша", "Алексеев"), Contact("Пётр", "Жаринов")];
+Widget listContacts(List<Contact> contacts) {
 
   return ListView.builder(
     scrollDirection: Axis.vertical,
@@ -108,5 +144,11 @@ Widget contact(BuildContext context, Contact contact) {
         color: Color(0xFFEDF2F6),
       )
     ],
+  );
+}
+
+Widget loadingBar() {
+  return Center(
+    child: CircularProgressIndicator(),
   );
 }

@@ -1,32 +1,53 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:new_project/firebase/DBFirestore.dart';
 
-import '../../classes/contact.dart';
+import '../../classes/Contact.dart';
 
 class NewContacts extends StatefulWidget {
+  var state = _NewContactsState();
 
   @override
-  _NewContactsState createState() => _NewContactsState();
+  _NewContactsState createState() => state;
 }
 
 class _NewContactsState extends State<NewContacts> {
+  String text = "";
   List<Contact> contacts = [];
 
   @override
   Widget build(BuildContext context) {
-    return listNewContacts(contacts);
+    return FutureBuilder(
+      future: DBFirestore.searchByName(text),
+      builder: (BuildContext context, snapshot) {
+        switch (snapshot.connectionState) {
+
+          case ConnectionState.none:
+            return loadingBar();
+          case ConnectionState.waiting:
+            return loadingBar();
+          case ConnectionState.active:
+            return loadingBar();
+          case ConnectionState.done:
+            if (snapshot.hasData) {
+              if (snapshot.data != null) {
+                contacts = snapshot.data!;
+                return listNewContacts(contacts);
+              }
+            }
+            return loadingBar();
+        }
+      },
+    );
   }
 
-  void updateNewContacts() {
+  void updateNewContacts(String text) {
     setState(() {
-
+      this.text = text;
     });
   }
 }
 
-void updateNewContacts() {
-
-}
 
 Widget listNewContacts(List<Contact> contacts) {
 
@@ -81,5 +102,11 @@ Widget newContact(BuildContext context, Contact contact) {
           ),
         ],
       )
+  );
+}
+
+Widget loadingBar() {
+  return Center(
+    child: CircularProgressIndicator(),
   );
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:new_project/classes/contact.dart';
+import 'package:new_project/classes/Contact.dart';
 import 'package:new_project/screens/fragments/Contacts.dart';
 import 'package:new_project/screens/fragments/NewContacts.dart';
 
@@ -13,16 +13,22 @@ class Chats extends StatefulWidget {
 }
 
 class _ChatsState extends State<Chats> {
-  Widget mainContent = Contacts();
+  Widget mainContent = Contacts("");
   List<Widget> backButton = [];
+  var _controller = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
+    if (mainContent is Contacts) {
+      String id = ModalRoute.of(context)?.settings.arguments as String;
+      (mainContent as Contacts).id = id;
+    }
     return SafeArea(
         child: Scaffold(
             body: Column(
               children: [
-                header(changeToNewContacts, changeToContacts, backButton),
+                header(changeToNewContacts, changeToContacts, backButton, _controller),
                 Divider(thickness: 1, color: Color(0xFFEDF2F6),),
                 Expanded(
                     flex: 1,
@@ -34,12 +40,17 @@ class _ChatsState extends State<Chats> {
     );
   }
 
-  void changeToNewContacts() {
+  void changeToNewContacts(String? text) {
     setState(() {
-      mainContent = NewContacts();
+      if (text != null) {
+        (mainContent as NewContacts).state.updateNewContacts(text);
+      } else {
+        mainContent = NewContacts();
+      }
       backButton = <Widget>[
         GestureDetector(
           onTap: () {
+            _controller.clear();
             changeToContacts();
           },
           child: SvgPicture.asset("assets/icons/back.svg")
@@ -53,7 +64,7 @@ class _ChatsState extends State<Chats> {
 
   void changeToContacts() {
     setState(() {
-      mainContent = Contacts();
+      mainContent = Contacts("");
       backButton = [];
     });
   }
@@ -61,7 +72,8 @@ class _ChatsState extends State<Chats> {
 }
 
 
-Widget header(Function changeToNewContacts, Function changeToContacts, List<Widget> backButton) {
+Widget header(Function changeToNewContacts, Function changeToContacts, List<Widget> backButton, TextEditingController controller) {
+
   return Padding(
       padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
       child: Container(
@@ -86,8 +98,9 @@ Widget header(Function changeToNewContacts, Function changeToContacts, List<Widg
                 color: Color(0xFFEDF2F6)
               ),
               child: TextField(
+                controller: controller,
                 onTap: () {
-                  changeToNewContacts();
+                  changeToNewContacts(null);
                 },
 
                 onTapOutside: (event) {
@@ -95,7 +108,7 @@ Widget header(Function changeToNewContacts, Function changeToContacts, List<Widg
                 },
 
                 onChanged: (text) {
-
+                  changeToNewContacts(text);
                 },
 
                 decoration: InputDecoration(

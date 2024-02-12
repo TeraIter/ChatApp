@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:new_project/classes/contact.dart';
+import 'package:new_project/classes/Contact.dart';
 
 class Chat extends StatelessWidget {
   Contact contact = Contact("", "");
@@ -37,7 +37,12 @@ Widget header(BuildContext context, Contact contact) {
       padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
     child: Row(
       children: [
-        SvgPicture.asset("assets/icons/back.svg"),
+        GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: SvgPicture.asset("assets/icons/back.svg"),
+        ),
 
         const SizedBox(width: 10),
 
@@ -112,13 +117,21 @@ Widget tabBar() {
                 borderRadius: BorderRadius.all(Radius.circular(12)),
                 color: Color(0xFFEDF2F6)
               ),
-              child: Text(
+              child: TextField(
                 style: TextStyle(
-                    color: Color(0xFF9DB7CB),
                     fontSize: 16,
                     fontFamily: "Gilroy"
                 ),
-                "Сообщение"
+                decoration: InputDecoration(
+                  hintText: "Сообщение",
+                  hintStyle: TextStyle(
+                      color: Color(0xFF9DB7CB),
+                      fontSize: 16,
+                      fontFamily: "Gilroy",
+                    fontWeight: FontWeight.w900
+                  ),
+                  border: InputBorder.none,
+                ),
               ),
             )
         ),

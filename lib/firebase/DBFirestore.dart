@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:new_project/classes/contact.dart';
+import 'package:new_project/classes/Contact.dart';
 
 class DBFirestore {
   static FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -11,7 +11,7 @@ class DBFirestore {
     firestore.collection("users").where("email", isEqualTo: email).get().then(
         (value) {
           if(value.docs.first.data()["password"] == password) {
-            Navigator.popAndPushNamed(context, "/chats");
+            Navigator.popAndPushNamed(context, "/chats",arguments: value.docs.first.id);
           } else {
             showDialog(context: context, builder: (context) {
               return AlertDialog(
@@ -43,17 +43,51 @@ class DBFirestore {
     });
   }
 
-  static List<Contact> seachByName(String name) {
+  static Future<List<Contact>> searchByName(String name) async {
     List<Contact> contacts = [];
-    firestore.collection("users").where("name", isEqualTo: name).get().then(
+
+    await firestore.collection("users").where("name", isEqualTo: name).get().then(
         (values) {
-          print("Nice");
           for (var value in values.docs) {
             contacts.add(Contact(value["name"], value["surname"]));
-            print(value.data());
           }
         });
+
     return contacts;
+  }
+
+  static Future<List<Contact>> getContacts(String id) async {
+    List<Contact> contacts = [];
+    List contactsId = [];
+
+    await firestore.collection("users").doc(id).get().then(
+            (value) {
+              var chats = value["chats"];
+              print("Chats is: $chats");
+              for (var map in chats) {
+                print("Map is: $map");
+                contactsId.add(map["memberId"]);
+              }
+            }
+    );
+
+    for (String id in contactsId) {
+      await firestore.collection("users").where(FieldPath.documentId, isEqualTo: id).get().then(
+              (value) {
+                contacts.add(Contact(value.docs.first["name"], value.docs.first["surname"]));
+              },
+        onError: (e) {
+
+        }
+      );
+    }
+    return contacts;
+  }
+
+  static void changeIsOnline(String id, bool flag) {
+    firestore.collection("users").doc(id).update({
+      "isOnline": flag
+    });
   }
 
 }
