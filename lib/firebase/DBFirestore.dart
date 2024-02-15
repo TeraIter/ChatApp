@@ -49,44 +49,74 @@ class DBFirestore {
     await firestore.collection("users").where("name", isEqualTo: name).get().then(
         (values) {
           for (var value in values.docs) {
-            contacts.add(Contact(value["name"], value["surname"]));
+            contacts.add(Contact(value.id ,value["name"], value["surname"]));
           }
         });
 
     return contacts;
   }
 
-  static Future<List<Contact>> getContacts(String id) async {
-    List<Contact> contacts = [];
-    List contactsId = [];
+  static Future<List<Map>> getChats(String id) async {
+    List<Map> chats = [];
+    List<String> memberId = [];
+    List<String> chatId = [];
+
 
     await firestore.collection("users").doc(id).get().then(
             (value) {
-              var chats = value["chats"];
-              print("Chats is: $chats");
-              for (var map in chats) {
-                print("Map is: $map");
-                contactsId.add(map["memberId"]);
-              }
+              try {
+                var chats = value["chats"];
+                for (var map in chats) {
+                  memberId.add(map["memberId"]);
+                  chatId.add(map["chatId"]);
+                }
+              } catch(e) {}
             }
     );
 
-    for (String id in contactsId) {
-      await firestore.collection("users").where(FieldPath.documentId, isEqualTo: id).get().then(
+    for (int i = 0; i < memberId.length; i++) {
+      await firestore.collection("users").where(FieldPath.documentId, isEqualTo: memberId[i]).get().then(
               (value) {
-                contacts.add(Contact(value.docs.first["name"], value.docs.first["surname"]));
-              },
-        onError: (e) {
+                chats.add({
+                  "contact": Contact(memberId[i], value.docs.first["name"], value.docs.first["surname"]),
+                  "chatId": chatId[i]
+                });
 
-        }
+              },
+        onError: (e) {}
       );
     }
-    return contacts;
+    return chats;
   }
 
   static void changeIsOnline(String id, bool flag) {
     firestore.collection("users").doc(id).update({
       "isOnline": flag
+    });
+  }
+
+  static Future<void> beginChat(String currentMemberId, String memberId) async {
+    var count = await firestore.collection("counters").doc("chats").get();
+
+    await firestore.collection("counters").doc("chats").update({
+      "count": FieldValue.increment(1)
+    });
+
+    await firestore.collection("users").doc(currentMemberId).update({
+      "chats": FieldValue.arrayUnion([
+        {
+          "chatId": count["count"],
+          "memberId": memberId
+        }
+      ])
+    });
+
+    var ref = FirebaseDatabase.instance.ref();
+    await ref.child("chats").update({
+      "${count["count"]}": {
+        "messages": {
+          "count": 0
+        },}
     });
   }
 

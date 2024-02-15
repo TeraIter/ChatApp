@@ -16,12 +16,15 @@ class _ChatsState extends State<Chats> {
   Widget mainContent = Contacts("");
   List<Widget> backButton = [];
   var _controller = TextEditingController();
+  String id = "";
 
 
   @override
   Widget build(BuildContext context) {
+    if (id.isEmpty){
+      id = ModalRoute.of(context)?.settings.arguments as String;
+    }
     if (mainContent is Contacts) {
-      String id = ModalRoute.of(context)?.settings.arguments as String;
       (mainContent as Contacts).id = id;
     }
     return SafeArea(
@@ -45,7 +48,7 @@ class _ChatsState extends State<Chats> {
       if (text != null) {
         (mainContent as NewContacts).state.updateNewContacts(text);
       } else {
-        mainContent = NewContacts();
+        mainContent = NewContacts(id);
       }
       backButton = <Widget>[
         GestureDetector(

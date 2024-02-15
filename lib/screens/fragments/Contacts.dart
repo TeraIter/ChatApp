@@ -16,7 +16,7 @@ class Contacts extends StatefulWidget {
 }
 
 class _ContactsState extends State<Contacts> with WidgetsBindingObserver{
-  List<Contact> contacts = [];
+  List<Map> chats = [];
   String id = "";
 
   _ContactsState(this.id);
@@ -31,31 +31,29 @@ class _ContactsState extends State<Contacts> with WidgetsBindingObserver{
   @override
   Widget build(BuildContext context) {
     DBFirestore.changeIsOnline(id, true);
-    return FutureBuilder(
-      future: DBFirestore.getContacts(id),
+    DBFirestore.getChats(id)
+    .then((value) {
+      return listContacts(value, id);
+    });
+    /*return FutureBuilder(
+      future: DBFirestore.getChats(id),
       builder: (BuildContext context, snapshot) {
-        switch(snapshot.connectionState) {
-
-          case ConnectionState.none:
-            // TODO: Handle this case.
-          case ConnectionState.waiting:
-            return loadingBar();
-          case ConnectionState.active:
-            // TODO: Handle this case.
-          case ConnectionState.done:
-            if(snapshot.hasData) {
-              if(snapshot.data != null) {
-                contacts = snapshot.data!;
-              }
-            }
-            return listContacts(contacts);
+        if(snapshot.hasData) {
+          if(snapshot.data != null) {
+            chats = snapshot.data!;
+          }
+        } else {
+          return loadingBar();
         }
+        return listContacts(chats, id);
+
       },
-    );
+    );*/
+    return loadingBar();
   }
 }
 
-Widget listContacts(List<Contact> contacts) {
+Widget listContacts(List<Map> contacts, String currentMemberId) {
 
   return ListView.builder(
     scrollDirection: Axis.vertical,
@@ -66,9 +64,9 @@ Widget listContacts(List<Contact> contacts) {
       return GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => Chat(contacts[index])));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => Chat(contacts[index]["contact"], contacts[index]["chatId"], currentMemberId)));
         },
-        child: contact(context, contacts[index]),
+        child: contact(context, contacts[index]["contact"]),
       );
     },
   );

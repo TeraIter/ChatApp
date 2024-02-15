@@ -9,12 +9,12 @@ final List<Color> _colors = [
 final _random = Random();
 
 class Contact {
-
+  String id = "";
   String name = "";
   String surname = "";
   Color backgroundColor = _colors[_random.nextInt(_colors.length)];
 
-  Contact(this.name, this.surname);
+  Contact(this.id, this.name, this.surname);
 
   String getInitials() {
     if (name.isNotEmpty && surname.isNotEmpty) {
