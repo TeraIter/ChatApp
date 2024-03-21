@@ -35,7 +35,7 @@ class _ContactsState extends State<Contacts> with WidgetsBindingObserver{
     .then((value) {
       return listContacts(value, id);
     });
-    /*return FutureBuilder(
+    return FutureBuilder(
       future: DBFirestore.getChats(id),
       builder: (BuildContext context, snapshot) {
         if(snapshot.hasData) {
@@ -48,8 +48,7 @@ class _ContactsState extends State<Contacts> with WidgetsBindingObserver{
         return listContacts(chats, id);
 
       },
-    );*/
-    return loadingBar();
+    );
   }
 }
 

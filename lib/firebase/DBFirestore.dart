@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -59,7 +61,7 @@ class DBFirestore {
   static Future<List<Map>> getChats(String id) async {
     List<Map> chats = [];
     List<String> memberId = [];
-    List<String> chatId = [];
+    List<Object> chatId = [];
 
 
     await firestore.collection("users").doc(id).get().then(

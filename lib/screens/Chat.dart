@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -16,7 +17,7 @@ import '../classes/Message.dart';
 
 class Chat extends StatefulWidget {
   Contact contact = Contact("", "", "");
-  String chatId = "";
+  int chatId = -1;
   String currentMemberId = "";
 
   Chat(this.contact, this.chatId, this.currentMemberId, {super.key});
@@ -28,7 +29,7 @@ class Chat extends StatefulWidget {
 
 class _ChatState extends State<Chat> {
   Contact contact = Contact("", "", "");
-  String chatId = "";
+  int chatId = -1;
   String currentMemberId = "";
   late DatabaseReference ref;
   bool fileSelected = false;
