@@ -1,16 +1,13 @@
 # Chat App
 
-"Chat App" made with flutter.
+"Chat App" made with Flutter, Firebase.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project is chatting app made with educational purposes.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<p align="center">
+  <img src="https://drive.usercontent.google.com/download?id=1utRQVzkRKp-Vu9MMHj3IJhkJrh5JO-su" width="250" alt="accessibility text">
+  <img src="https://drive.usercontent.google.com/download?id=1bk1GWZn2tcJOMSTkyOMmXAeurMRMHq_z" width="250" alt="accessibility text">
+  <img src="https://drive.usercontent.google.com/download?id=1v2HVH9SWhwMkysnt5O3TVeVHEOzvuEzc" width="250" alt="accessibility text">  
+</p>
