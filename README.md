@@ -1,6 +1,6 @@
-# new_project
+# Chat App
 
-A new Flutter project.
+"Chat App" made with flutter.
 
 ## Getting Started
 
